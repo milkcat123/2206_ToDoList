@@ -1,0 +1,33 @@
+:root{
+    --main-color: #548CE1;
+    --delete-color: #FF4040;
+    --grey-color: #E5E5E5;
+    --shadow: 0px 4px 10px #548ce1;
+    --background-color: rgba(84, 140, 225, 0.12);
+    --black-color:#4b4b4b;
+}
+*{
+    transition: 0.3s;
+}
+#app{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    text-align: center;
+    background: var(--background-color);
+}
+.wrap{
+    display: inline-block;
+    background: #fff;
+    height: 88vh;
+    width: 70%;
+    padding: 40px 48px;
+    border-radius: 15px;
+}
+button{
+    border: none;
+    background: none;
+    cursor: pointer;
+    font-size: 18px;
+}
