@@ -178,6 +178,7 @@ export default {
   background: #fff;
   cursor: pointer;
 }
+.change-btn-wrap button:nth-child(2){margin-right: 0px;}
 .change-btn-wrap button i.bi{
   font-size: 18px;
   margin: 0 5px;
@@ -196,5 +197,47 @@ export default {
   top: 0px;
   border: none;
   margin-right: 0;
+}
+@media (max-width:768px){
+  .title h1{
+    width: 180px;
+    font-size: 32px;
+  }
+  .title span{
+  width: calc(100% - 180px);
+  }
+  .change-btn-wrap{
+    flex-wrap: wrap;
+  }
+  .change-btn-wrap button.addnew{
+    position: static;
+    display: block;
+    margin-top: 20px;
+    background: var(--background-color);
+  }
+  
+}
+@media (max-width:426px){
+  .title h1{
+    width: 130px;
+    font-size: 28px;
+    font-weight: 700;
+  }
+  .title span{
+  width: calc(100% - 140px);
+  height: 2px;
+  }
+  .change-btn-wrap{
+    margin-top: 30px;
+  }
+  .change-btn-wrap button{
+    width: 48%;
+    font-size: 18px;
+    margin-right: 4%;  
+  }
+  .change-btn-wrap button:nth-child(2){margin-right: 0px;}
+  .change-btn-wrap button.addnew{
+    width: 100%;
+  }
 }
 </style>

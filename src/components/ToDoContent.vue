@@ -1,9 +1,9 @@
 <template>
   <div class="list-table-wrap">
     <div class="list-head">
-      <div class="item">代辦內容</div>
-      <div class="item">修改時間</div>
-      <div class="item">操作</div>
+      <div class="item content">代辦內容</div>
+      <div class="item date">修改時間</div>
+      <div class="item tool">操作</div>
     </div>
     <div class='list-table'>
       <div v-for="(item,index) in listItems" :class="{'item':true,'on':item.checked}" :key="index">
@@ -135,7 +135,7 @@ export default {
 .list-table .item label{
   text-align: left;
   color: var(--black-color);
-  line-height: 1.5;
+  line-height: 1.2;
 }
 .list-table .item .ok{
   color: var(--main-color);
@@ -180,5 +180,40 @@ input[type=text]{
 }
 ::-webkit-scrollbar-track{
   width: 5px;
+}
+@media (max-width:768px){
+  .list-table .item{
+    flex-wrap:wrap;
+  }
+}
+@media (max-width:426px){
+  .list-head .item.content{
+    width: 100%;
+  }
+  .list-head .item.date{
+    display: none;
+  }
+  .list-head .item.tool{
+    display: none;
+  }
+  .list-table .item{
+    justify-content: right;
+  }
+  .list-table .item label{
+    width: 100%;
+    font-size: 18px;
+    margin-bottom: 10px;
+  }
+  .list-table .item .date{
+    font-size: 18px;
+    width: 100px;
+    color: var(--grey-color);
+  }
+  .list-table .item .tool{
+    width: 100px;
+  }
+  .list-table .item .tool i.bi{
+    font-size: 18px;
+  }
 }
 </style>

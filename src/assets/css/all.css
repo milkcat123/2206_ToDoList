@@ -31,3 +31,17 @@ button{
     cursor: pointer;
     font-size: 18px;
 }
+@media (max-width:768px) {
+    .wrap{
+        width: 90%;
+        height: 90%;
+        padding:30px;
+    }
+}
+@media (max-width:426px){
+    .wrap{
+        width: 90%;
+        height: 95vh;
+        padding:20px 15px;
+    }
+}
