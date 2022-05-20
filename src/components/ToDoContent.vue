@@ -11,7 +11,7 @@
           <input type='checkbox' 
           :checked="item.checked" 
           :disabled="item.disabled" 
-          @click="item.checked ? item.checked = false : item.checked = true"
+          @click="setCheckedSwitch(index)"
           >
           <template v-if="item.edit">
             <button class="ok" @click="editFinish(index)">
@@ -19,7 +19,7 @@
             </button>
             <input type="text" 
             placeholder="請輸入文字"
-            maxlength="20" 
+            maxlength="40" 
             :value="item.content"
             @input="updateContent($event,index)"
             @keydown.enter="editFinish(index)"
@@ -63,7 +63,11 @@ export default {
   props:['listItems'],
   methods: {
     setDeleteItem(index){
-      this.$emit('setDeleteItem',index);
+      let data = {
+        'listName':'listItems',
+        'index': index
+      }
+      this.$emit('setDeleteItem',data);
     },
     setEditItem(index){
       this.$emit('setEditItem',index);
@@ -72,7 +76,7 @@ export default {
       this.$emit('editFinish',index);
     },
     updateContent(e,index){
-      console.log(e);
+      // console.log(e);
       let data = {
         'content':e.target.value,
         'index':index
@@ -81,6 +85,9 @@ export default {
     },
     setSaveItem(index){
       this.$emit('setSaveItem',index);
+    },
+    setCheckedSwitch(index){
+      this.$emit('setCheckedSwitch',index)
     }
   },
 }
@@ -113,7 +120,7 @@ export default {
   width: 20%;
 }
 .list-table{
-  height: 60vh;
+  height: calc(60vh - 60px);
   overflow-y: auto;
 }
 .list-table .item{
@@ -121,9 +128,6 @@ export default {
   padding: 12px 0;
   align-items: center;
   border-bottom: 1px solid var(--black-color);
-}
-.list-table .item.on{
-  background: var(--background-color);
 }
 .list-table .item.on label{
   text-decoration: line-through;
