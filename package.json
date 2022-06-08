@@ -1,5 +1,5 @@
 {
-  "name": "vue2_todolist",
+  "name": "yuki_todolist",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -36,7 +36,9 @@
     "parserOptions": {
       "parser": "@babel/eslint-parser"
     },
-    "rules": {}
+    "rules": {
+      "vue/no-unused-components": 0
+    }
   },
   "browserslist": [
     "> 1%",

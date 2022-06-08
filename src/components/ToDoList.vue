@@ -7,7 +7,7 @@
     <div class="change-btn-wrap">
       <button :class="{'on':on==='btn1'}" @click="on='btn1'">代辦事項<i class="bi bi-pencil-fill"></i></button>
       <button :class="{'on':on==='btn2'}" @click="on='btn2'">封存項目<i class="bi bi-archive-fill"></i></button>
-      <button class="addnew" @click="addNewItem()"><i class="bi bi-plus-square"></i>新增代辦</button>
+      <button v-show="on==='btn1'" class="addnew" @click="addNewItem()"><i class="bi bi-plus-square"></i>新增代辦</button>
     </div> 
     <div class="list-table-wrap">
       <ToDoContent
@@ -17,14 +17,21 @@
         @setEditItem="editItem"
         @editFinish="editFinish"
         @updateContent="updateContent"
-        @setSaveItem="saveItem"/>
+        @setSaveItem="saveItem"
+        @setCheckedSwitch="checkedSwitch"/>
       <SaveContent
-        v-show="on==='btn2'"/>
+        v-show="on==='btn2'"
+        :saveItems="saveItems"
+        @setDeleteItem="deleteItem"
+        @openSaveItem="openSaveItem"/>
     </div> 
   </div>
 </template>
 
 <script>
+import { TodoListDoc } from "@/db"
+import { getDoc, updateDoc} from "firebase/firestore";
+
 import ToDoContent from "@/components/ToDoContent.vue"
 import SaveContent from "@/components/SaveContent.vue"
 export default {
@@ -33,11 +40,25 @@ export default {
   data(){
     return{
       on:'btn1',
-      listItems:[{'content':'要買雞蛋','date':'2020-8-17','checked':false,'edit':false,'disabled':false},],
-      saveItems:[]
+      addNew:false,
+      listItems:[{'content':'default message','date':'2020-8-17','checked':false,'edit':false,'disabled':false},],
+      saveItems:[{'content':'default message','date':'2020-8-17','checked':false,'edit':false,'disabled':false,'saveDate':'2022-8-5'},]
     }
   },
+  created(){
+    this.getFirebaseData();
+  },
   methods: {
+    async getFirebaseData(){
+      await getDoc(TodoListDoc)
+      .then((data)=>{
+        console.log('getFirebaseData success',data.data());
+        let dataList = data.data();
+        this.listItems = dataList.listItemData;
+        this.saveItems = dataList.saveItemData;
+      })
+      .catch(err => console.log('error message:',err));
+    },
     addNewItem(){
       let spaceItem ={
         'content':'',
@@ -48,25 +69,68 @@ export default {
       }
       spaceItem.date = new Date().getFullYear()+'-'+(new Date().getMonth()+1)+'-'+new Date().getDate();
       this.listItems.push(spaceItem);
+      this.addNew=true;
     },
     deleteItem(data){
-      this.listItems.splice(data,1);
+      let list = data.listName;
+      list === 'listItems' ? this.listItems.splice(data.index,1) : this.saveItems.splice(data.index,1);
+      this.updateFirebaseListItem();
+      this.updateFirebaseSaveItem();
     },
     editItem(data){
       this.listItems[data].edit = true;
       this.listItems[data].disabled = true;
     },
     editFinish(data){
+      let input = document.querySelector("input[type='text']");
+      if(this.listItems[data].content.trim() ===""){
+        alert("請輸入代辦內容!");
+        input.focus();
+        return
+      }
       this.listItems[data].edit = false;
       this.listItems[data].disabled = false;
+      this.updateFirebaseListItem();
     },
     updateContent(data){
       this.listItems[data.index].content = data.content;
     },
     saveItem(data){
       let item = this.listItems[data];
+      this.listItems[data]['saveDate'] = new Date().getFullYear()+'-'+(new Date().getMonth()+1)+'-'+new Date().getDate();
       this.saveItems.push(item);
-      this.deleteItem(data);
+      this.listItems.splice(data,1)
+      this.updateFirebaseListItem();
+      this.updateFirebaseSaveItem();
+    },
+    openSaveItem(data){
+      let item = this.saveItems[data];
+      this.listItems.push(item);
+      this.saveItems.splice(data,1);
+      this.updateFirebaseListItem();
+      this.updateFirebaseSaveItem();
+    },
+    checkedSwitch(data){
+      let item = this.listItems[data];
+      item.checked ? item.checked = false : item.checked = true;
+      this.updateFirebaseListItem();
+    },
+    async updateFirebaseListItem(){
+      await updateDoc(TodoListDoc,{
+        'listItemData':this.listItems
+      }).then(()=>{console.log('updateFLI success')})
+    },
+    async updateFirebaseSaveItem(){
+      await updateDoc(TodoListDoc,{
+        'saveItemData':this.saveItems
+      }).then(()=>{console.log('updateFSI success')})
+    }
+  },
+  updated() {
+    if(this.addNew){
+      let input = document.querySelector("input[type='text']");
+      input.focus();
+      this.addNew = false;
     }
   },
 }
@@ -114,6 +178,7 @@ export default {
   background: #fff;
   cursor: pointer;
 }
+.change-btn-wrap button:nth-child(2){margin-right: 0px;}
 .change-btn-wrap button i.bi{
   font-size: 18px;
   margin: 0 5px;
@@ -132,5 +197,47 @@ export default {
   top: 0px;
   border: none;
   margin-right: 0;
+}
+@media (max-width:768px){
+  .title h1{
+    width: 180px;
+    font-size: 32px;
+  }
+  .title span{
+  width: calc(100% - 180px);
+  }
+  .change-btn-wrap{
+    flex-wrap: wrap;
+  }
+  .change-btn-wrap button.addnew{
+    position: static;
+    display: block;
+    margin-top: 20px;
+    background: var(--background-color);
+  }
+  
+}
+@media (max-width:426px){
+  .title h1{
+    width: 130px;
+    font-size: 28px;
+    font-weight: 700;
+  }
+  .title span{
+  width: calc(100% - 140px);
+  height: 2px;
+  }
+  .change-btn-wrap{
+    margin-top: 30px;
+  }
+  .change-btn-wrap button{
+    width: 48%;
+    font-size: 18px;
+    margin-right: 4%;  
+  }
+  .change-btn-wrap button:nth-child(2){margin-right: 0px;}
+  .change-btn-wrap button.addnew{
+    width: 100%;
+  }
 }
 </style>
